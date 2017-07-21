@@ -120,6 +120,7 @@ if isfield(tags,'version')
     for ii=1:length(tags.version);helptxt{end+1} = [' ' tags.version{ii}];end
 end
 
+
 %% add the generated helptext to the file
 
 % put the whole thing in comment
