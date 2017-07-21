@@ -37,11 +37,6 @@ function generateFunctionHelp(funcName)
 %       @version
 %
 % The old help present in the function is added to the bottom, as a backup
-%
-% Adam Cooman, ELEC VUB
-% 07/01/2015 version 1
-% 16/01/2015 The function now overwrites the original file, even when it is called from a different directory
-% 17/04/2015 'addParameter' can be used as a substitute for 'addParamvalue', thus the generateFunctionHelp-function should reflect this.
 
 %% extract the necessary information of the function out of the code
 
@@ -124,9 +119,6 @@ if isfield(tags,'version')
     helptxt{end+1} = 'Version info:';
     for ii=1:length(tags.version);helptxt{end+1} = [' ' tags.version{ii}];end
 end
-% some disclaimer
-helptxt{end+1}='';
-helptxt{end+1}=['This documentation was generated with the generateFunctionHelp function at ' date];
 
 %% add the generated helptext to the file
 
