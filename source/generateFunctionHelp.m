@@ -59,9 +59,11 @@ if ~isfield(tags,'generateFunctionHelp')
     return
 end
 
-% look for the input parser and the way it parses the inputs
-inputs = parseInputParser(file);
+% find the function statement in the file
+funcStatement = lookForFunctionStatement(file);
 
+% get the function name out of the statement
+tags.name = parseForFunctionName(funcStatement);
 
 %% build the help of the function using this information
 
@@ -98,6 +100,16 @@ kk=kk-1;
 % parse the function definition better
 temp = regexp(file{kk},'^\s*function\s+(?<output>\[?[a-zA-Z0-9_,\s]*\]?)\s*=\s*(?<name>[a-zA-Z0-9_]+)','names');
 res.name = temp.name;
+%% parseForFunctionName
+function res = parseForFunctionName(functionStatement)
+% parses the function statement to extract the name of the function
+temp = regexp(functionStatement,'\s*=\s*(?<name>[a-zA-Z0-9_]+)','names');
+if ~isempty(temp)
+    res = temp.name;
+else 
+    error('function name could not be extracted from the function statement')
+end
+end
 % get rid of the spaces
 temp.output = temp.output(~isspace(temp.output));
 % get rid of the brackets
