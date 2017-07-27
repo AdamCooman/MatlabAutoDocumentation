@@ -229,56 +229,6 @@ if any(cellfun(@isempty,res.outputType))
 end
 end
 %% parseInputParser
-function res = parseInputParser(file)
-% this function collects information about the inputs of the function from
-% the input parser statements
-
-% look for the lines with 'addRequired', 'addOptional' or 'addParamValue'
-% detected = regexp(file,'\.(?<mode>(addRequired)|(addOptional)|(addParamValue))\(\''(?<name>[a-zA-Z0-9_]+)\''\,(?<arg2>[^\,]+),?(?<arg3>\@?[a-zA-Z0-9_]*) \)','names','freespacing');
-detected = regexp(file,'\.(?<mode>(addRequired)|(addOptional)|(addParamValue)|(addParameter))\((?<stuffInside>.+)\)\;?','names','freespacing');
-inputParserStatementLines = find( cellfun(@(x) ~isempty(x),detected));
-detected = detected(inputParserStatementLines);
-for ii=1:length(detected)
-    detected{ii}.stuffInside = strsplit(detected{ii}.stuffInside,',');
-end
-% handle the detected lines, get the info out of the statement
-res = struct();
-for ii=1:length(detected)
-     res(ii).paramName = detected{ii}.stuffInside{1}(2:end-1);
-    switch detected{ii}.mode
-        case 'addRequired'
-            res(ii).mode = 'required';
-            res(ii).default = '';
-            res(ii).check = strjoin(detected{ii}.stuffInside(2:end),',');
-        case 'addOptional'
-            res(ii).mode = 'optional';
-            res(ii).default = detected{ii}.stuffInside{2};
-            res(ii).check = strjoin(detected{ii}.stuffInside(3:end),',');
-        case {'addParamValue','addParameter'}
-            res(ii).mode = 'paramvalue';
-            res(ii).default = detected{ii}.stuffInside{2};
-            res(ii).check = strjoin(detected{ii}.stuffInside(3:end),',');
-        otherwise
-            error('impossiburu!')
-    end
-end
-% find the comments before each inputParser statement
-for ii=1:length(detected)
-    kk=inputParserStatementLines(ii);
-    stillcomment=true;
-    while stillcomment
-        kk=kk-1;
-        stillcomment = ~isempty(regexp(file{kk},'^\s*\%','once'));
-    end
-    % cut the % signs out of the comment
-    comment = file(kk+1:inputParserStatementLines(ii)-1);
-    for kk=1:length(comment)
-        comment{kk} = strtrim(comment{kk});
-        comment{kk} = comment{kk}(2:end);
-    end
-    res(ii).description = strtrim(strjoin(comment(:).'));
-end
-end
 %% replaceHelp
 function file = replaceHelp(file,newhelp)
 % this function extracts the help from a file and replaces it by the new
