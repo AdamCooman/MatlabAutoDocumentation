@@ -143,20 +143,6 @@ end
 
 
 
-%% lookForTags
-function res = lookForTags(file)
-% this function looks for the different tags in the file and returns the value
-% associated to those tags in a struct that contains cell arrays with the value
-detected = regexp(file,'^\s*\%\s*\@(?<tag>[a-zA-Z0-9]+)\s?(?<value>.*)','names');
-detected = detected(cellfun(@(x) ~isempty(x),detected));
-res = struct();
-for ii=1:length(detected)
-    if isfield(res,detected{ii}.tag)
-        res.(detected{ii}.tag){end+1} = detected{ii}.value;
-    else
-        res.(detected{ii}.tag) = {detected{ii}.value};
-    end
-end
 % Get more info out of the actual function definition
 notfound=true;kk=1;
 while notfound
