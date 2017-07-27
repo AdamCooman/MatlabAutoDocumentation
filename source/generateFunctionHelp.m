@@ -67,10 +67,9 @@ inputs = parseInputParser(file);
 
 
 
-%% add the generated helptext to the file
+% build the help of the function using this information
+helptxt = createNewHelp(tags,inputs,outputs);
 
-% put the whole thing in comment
-helptxt = comment(helptxt);
 % replace the original help of the function
 file = replaceHelp(file,helptxt);
 % overwrite the original file

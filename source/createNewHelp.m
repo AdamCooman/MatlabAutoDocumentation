@@ -1,6 +1,5 @@
-function helptxt = generateHelp( tags , inputs , outputs)
-%GENERATEHELP generates the help of a function starting from its tags
-
+function helptxt = createNewHelp( tags , inputs , outputs)
+%CREATENEWHELP generates the help of a function starting from its tags
 
 helptxt = {};
 % the H1 line
