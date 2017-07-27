@@ -162,9 +162,7 @@ end
 %% parseInputParser
 %% replaceHelp
 function file = replaceHelp(file,newhelp)
-% this function extracts the help from a file and replaces it by the new
-% help passed to this function. The old help is moved to the bottom of the
-% file
+% REPLACEHELP extracts the help from a file and replaces it by the new help
 
 % look for the old help. start by finding the function call
 notfound=true;kk=1;
@@ -183,24 +181,6 @@ while notfound
         notfound =  strcmp(temp(1),'%');
     end
     kk=kk+1;
-end
-helpstop = kk-2;
-
-% look for an old backup of the help and remove it
-notfound=true;kk=length(file);% start looking from the back, that's faster
-try
-    while notfound
-        notfound = isempty(regexp(strtrim(file{kk}),'^\%\%\sgenerateFunctionHelp\:','once'));
-        kk=kk-1;
-    end
-    % just remove the backup
-    file = file(1:kk);
-end
-% if you found help, move it to the end of the file
-if helpstop>=helpstart
-    file{end+1} = ['%% generateFunctionHelp: old help, backed up at ' date '. leave this at the end of the function'];
-    file(end+1:end+1+(helpstop-helpstart)) = file(helpstart:helpstop);
-    file(helpstart:helpstop) = [];
 end
 % now place the new help behind the function call
 file = [file(1:helpstart-1);newhelp(1:end).';file(helpstart:end)];
