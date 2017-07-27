@@ -36,10 +36,8 @@ function generateFunctionHelp(funcName)
 %       @author, @institution
 %       @version
 %
-% The old help present in the function is added to the bottom, as a backup
 
 %% extract the necessary information of the function out of the code
-
 % save the current working directory
 currDir = cd;
 
@@ -50,7 +48,7 @@ cd(loc);
 % load the fuction content into a cell array of strings
 file = readTextFile(funcName);
 
-% look for different tags in the 
+% look for different tags in the file
 tags = lookForTags(file);
 
 % check for the presence of the generateFunctionHelp tag. if it is not present, the file should not be parsed
@@ -65,15 +63,18 @@ funcStatement = lookForFunctionStatement(file);
 % get the function name out of the statement
 tags.name = parseForFunctionName(funcStatement);
 
-%% build the help of the function using this information
+% parse the function statement to look for the number of outputs and their name
+outputs = parseForOutputs(funcStatement,tags);
 
-
+% look for the input parser and the way it parses the inputs
+inputs = parseInputParser(file);
 
 % build the help of the function using this information
 helptxt = createNewHelp(tags,inputs,outputs);
 
 % replace the original help of the function
 file = replaceHelp(file,helptxt);
+
 % overwrite the original file
 writeTextFile(file,funcName);
 
@@ -82,14 +83,8 @@ cd(currDir);
 
 end
 
-
-
-
-
-
-
-
-
+%% lookForFunctionStatement
+function res = lookForFunctionStatement()
 % Get more info out of the actual function definition
 notfound=true;kk=1;
 while notfound
@@ -97,9 +92,8 @@ while notfound
     kk=kk+1;
 end
 kk=kk-1;
-% parse the function definition better
-temp = regexp(file{kk},'^\s*function\s+(?<output>\[?[a-zA-Z0-9_,\s]*\]?)\s*=\s*(?<name>[a-zA-Z0-9_]+)','names');
-res.name = temp.name;
+res = file{kk};
+end
 %% parseForFunctionName
 function res = parseForFunctionName(functionStatement)
 % parses the function statement to extract the name of the function
@@ -110,6 +104,11 @@ else
     error('function name could not be extracted from the function statement')
 end
 end
+%% lookForOutputs
+% TODO: this cannot deal with varargout for the moment
+function res = parseForOutputs(functionStatement,tags)
+% parses the function statement to extract the names and amount of output arguments
+temp = regexp(functionStatement,'^\s*function\s+(?<output>\[?[a-zA-Z0-9_,\s]*\]?)\s*=\s*','names');
 % get rid of the spaces
 temp.output = temp.output(~isspace(temp.output));
 % get rid of the brackets
@@ -120,7 +119,7 @@ numOut = length(res.outputs);
 % parse the info about the output tag a little. you can add a number to
 % indicate which one it is. If there's only one output, the tag can be
 % called 'ouput'
-if isfield(res,'output')
+if isfield(tags,'output')
     % there's only one output, just add that one
     res.outputDesc = {strjoin(res.output)}; 
     res = rmfield(res,'output');
@@ -161,9 +160,7 @@ else
         res = rmfield(res,['outputType' num2str(ii)]);
     end
 end
-
-
-% chech whether every output has a description
+% check whether every output has a description
 if any(cellfun(@isempty,res.outputDesc))
     warning('some of the outputs seem to have no explanation');
 end
@@ -171,7 +168,6 @@ if any(cellfun(@isempty,res.outputType))
     warning('some of the outputs seem to have no type');
 end
 end
-%% parseInputParser
 %% replaceHelp
 function file = replaceHelp(file,newhelp)
 % REPLACEHELP extracts the help from a file and replaces it by the new help
