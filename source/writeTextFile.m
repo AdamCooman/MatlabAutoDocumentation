@@ -5,37 +5,33 @@ function writeTextFile(Text,FileName)
 %
 % Text is a cell array of strings that has to be written to a text file.
 % Filename is a string which contains the name of the text file to be
-% created. Filename can also be a scalar file id if you want to append to
-% an opened file for example.
+% created.
 %
 % Adam Cooman, ELEC VUB
 
-
-if ~iscell(Text)
+%% check the provided text
+if ~iscellstr(Text)
     error('input should be a cell array of strings');
 else
-    if ~isempty(Text)
-        if any(cellfun(@(x)~ischar(x),Text))
-            error('some of the elements in the Text cell are not strings');
-        end
-    else
+    if isempty(Text)
         warning('Text cell array is empty');
         Text = {''};
     end
 end
-
+%% check the fileName and open the file
 if ischar(FileName)
     fid = fopen(FileName,'w');
+else
+    error('The FileName should be a string')
 end
-
+%% write the text to the file
 if fid~=-1
-    for ii=1:length(Text)
-        fprintf(fid,'%s\r\n',Text{ii});
-    end
+    text = strjoin(Text,'\r\n');
+    fwrite(fid,text);
 else
     error('cannot open the file to read');
 end
-
+%% close the file
 if ischar(FileName)
     fclose(fid);
 end
