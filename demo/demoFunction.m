@@ -21,13 +21,10 @@ args = p.results;
 
 out1 = args.ReqParam1;
 
-% @generateFunctionHelp
-% @tagline This function demonstrates the use of the generateFunctionHelp function
-% @description long description of what the function does, placed afther the function call 
-% @extra extra info, added to the end of the help, before the author and version info
-% @example some example code to show how the function works
-% @author ADAM
-% @institution  INRIA
-% @output1 description of output 1
-% @outputType1 type of output number 1
+% @Tagline This function demonstrates the use of the generateFunctionHelp function
+% @Description long description of what the function does, placed afther the function call 
+% @Example some example code to show how the function works
+% @Example some more example code
+% @Example and we have some more
+
 
