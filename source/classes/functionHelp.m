@@ -151,13 +151,24 @@ classdef functionHelp < Help
             	obj.OutputList{vv} = Variable('Name',temp.outputs{vv},'Format',{'  #Name#','  #Description#'});
             end
         end
+        %% printFunctionSignature
         function res = printFunctionSignature(obj)
-            res = {sprintf('"%s":',obj.Name)};
-            res{end+1}='{';
-            for ii=1:length(obj.Inputs)
+            % prints the JSON list with function inputs
+            if ~isempty(obj.InputList)
+                inputsigs={};
+                for ii=1:length(obj.InputList)
+                    inputsigs{end+1}=obj.InputList{ii}.generateSignature();
+                end
+                inputsigs=['"inputs":[' strjoin(inputsigs,',') ']'];
             end
-            res{end+1}='}';
-            
+            if ~isempty(obj.OutputList)
+                outputsigs={};
+                for ii=1:length(obj.InputList)
+                    outputsigs{end+1}=obj.InputList{ii}.generateSignature();
+                end
+                outputsigs=['"outputs":[' strjoin(outputsigs,',') ']'];
+            end
+            res = [sprintf('"%s":',obj.Name) '{' strjoin([{inputsigs} {outputsigs}],',') '}'];
         end
     end
     methods (Static)
