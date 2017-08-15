@@ -112,7 +112,25 @@ classdef functionHelp < Help
                 res{end+1} = sprintf('%s %s(%s)',outstr , obj.Name , strjoin([reqNames,optNames,parNames],','));
             end
         end
-        %% parse 
+        %% splitInputList splits the list of inputs into required, optional and parameters
+        function [req,opt,par]=splitInputList(obj)
+            % splits the list of inputs into required, optional and parameters
+            req = {};
+            opt = {};
+            par = {};
+            for ii=1:length(obj.InputList)
+                switch obj.InputList{ii}.Kind
+                    case 'required'
+                        req{end+1}=obj.InputList{ii};
+                    case 'optional'
+                        opt{end+1}=obj.InputList{ii};
+                    case 'namevalue'
+                        par{end+1}=obj.InputList{ii};
+                    otherwise
+                        error('Cannot deal with input types besides "required","optional" or "namevalue"');
+                end
+            end
+        end
         %% parseFunctionStatement 
         function obj = parseFunctionStatement(obj,code)
             % parses the function statement of the code
@@ -155,23 +173,6 @@ classdef functionHelp < Help
             obj = obj.parseFunctionStatement(code);
             % parse the input parser statements
             obj.InputList = Help.parseInputParser(code);
-        end
-        function [req,opt,par]=splitInputList(InputList)
-            req = {};
-            opt = {};
-            par = {};
-            for ii=1:length(obj.InputList)
-                switch obj.InputList{ii}.Kind
-                    case 'required'
-                        req{end+1}=obj.InputList{ii};
-                    case 'optional'
-                        opt{end+1}=obj.InputList{ii};
-                    case 'namevalue'
-                        par{end+1}=obj.InputList{ii};
-                    otherwise
-                        error('Cannot deal with input types besides "required","optional" or "namevalue"');
-                end
-            end
         end
     end
 end
