@@ -1,8 +1,12 @@
 classdef Help < printable
     properties
+        % is the name of the function or class
         Name
+        % is the tagline of the function or class
         Tagline
+        % contains the longer description of the function or the class
         Description
+        % contains example code which shows how to use the function or class
         Example
     end
     methods
@@ -24,6 +28,7 @@ classdef Help < printable
         
         %% parse function, which looks for tags with @ in the code and assigns them to the properties of the object.
         function obj = parseTags(obj,code)
+            % extracts the tags from the code and assigns them to the properties of the object
             % look for statements in the comments of the code which start with @
             detected = regexp(code,'^\s*\%\s*\@(?<tag>[a-zA-Z0-9]+)\s?(?<value>.*)','names');
             detected = detected(~cellfun('isempty',detected));
@@ -47,6 +52,8 @@ classdef Help < printable
     methods (Static)
         %% parseInputParser function
         function InputList = parseInputParser(code)
+            % parses InputParser code to extract the list of input variables
+            
             % TODO: This function should also look for properties in the inputParser like:
             %   - KeepUnmatched
             %   - StructExpand

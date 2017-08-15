@@ -1,19 +1,25 @@
 classdef functionHelp < Help
     %FUNCTIONHELP contains the help of a function
     properties
+        % cell array of input variables
         InputList
+        % cell array of output variables
         OutputList
     end
 
     properties (Dependent)
+        % this dependent variable returns a printed list of the input variables of the function
         Inputs
+        % returns a printed list of output variables of the function
         Outputs
+        % returns the different ways that the function can be called
         CallTypes
     end
     
     methods
         %% CONSTRUCTOR
         function obj = functionHelp(varargin)
+            % CONSTRUCTOR
             DefaultFormat = {...
                 '#Name# #Tagline#';...
                 '';...
@@ -107,7 +113,9 @@ classdef functionHelp < Help
             end
         end
         %% parse 
+        %% parseFunctionStatement 
         function obj = parseFunctionStatement(obj,code)
+            % parses the function statement of the code
             % find the function statement in the code
             statement = code{find(~cellfun('isempty',regexp(code,'^\s*function\s')),1)};
             % now call regexp again with some more funkyness

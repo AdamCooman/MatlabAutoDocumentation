@@ -1,9 +1,12 @@
 classdef printable
     properties
+        % format in which the object will be printed
         Format = '';
     end
     methods
         function RES = print(obj)
+            % prints the object according to its format
+            
             % find the properties in the format cellstr
             props = regexp(obj.Format,'\#[a-zA-Z0-9]+\#','match');
             % get the unique list of used properties
