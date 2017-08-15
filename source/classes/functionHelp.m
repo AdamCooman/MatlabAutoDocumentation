@@ -6,7 +6,6 @@ classdef functionHelp < Help
         % cell array of output variables
         OutputList
     end
-
     properties (Dependent)
         % this dependent variable returns a printed list of the input variables of the function
         Inputs
@@ -47,11 +46,12 @@ classdef functionHelp < Help
                 obj.(fields{ff}) = args.(fields{ff});
             end
         end
-        %% Getter for Inputs returns cell array of strings with the help info about the inputs
+        %% Getter for Inputs 
+        % obj.Inputs returns cell array of strings with the help info about the inputs
         function res = get.Inputs(obj)
             res = {};
             % split the InputList into required, optional and paramValue pairs
-            [req,opt,par]=splitInputList(obj.InputList);
+            [req,opt,par]=obj.splitInputList();
             if ~isempty(req)
                 res{end+1} = 'Required Inputs:';
                 for ii=1:length(req)
@@ -75,6 +75,7 @@ classdef functionHelp < Help
             end
         end
         %% Getter for Outputs
+        % obj.Outputs returns cell array of strings with the help info about the outputs
         function res = get.Outputs(obj)
             res = {};
             if ~isempty(obj.OutputList)
@@ -86,6 +87,7 @@ classdef functionHelp < Help
             end
         end
         %% Getter for CallTypes
+        % obj.CallTypes returns cell array of strings with the help info on how to call the function
         function res = get.CallTypes(obj)
             % get the string that describes the output parameters
             outNames = cellfun(@(x) x.Name ,obj.OutputList,'UniformOutput',false);
@@ -98,17 +100,17 @@ classdef functionHelp < Help
                     outstr = sprintf('[%s] = ',strjoin(outNames));
             end
             % split the inputList in
-            [req,opt,~]=splitInputList(obj.InputList);
+            [req,opt,par]=obj.splitInputList();
             % generate cell arrays with the names of the input parameters
             reqNames = cellfun(@(x) x.Name,req,'UniformOutput',false);
             optNames = cellfun(@(x) x.Name,opt,'UniformOutput',false);
             parNames = '''ParamName'',ParamValue';
             % now generate the different ways in which the function can be called
                 res{1    } = sprintf('%s %s(%s)',outstr , obj.Name , strjoin(reqNames,','));
-            if ~isempty(obj.OptionalInputs)
+            if ~isempty(opt)
                 res{end+1} = sprintf('%s %s(%s)',outstr , obj.Name , strjoin([reqNames,optNames],','));
             end
-            if ~isempty(obj.ParameterInputs)
+            if ~isempty(par)
                 res{end+1} = sprintf('%s %s(%s)',outstr , obj.Name , strjoin([reqNames,optNames,parNames],','));
             end
         end
