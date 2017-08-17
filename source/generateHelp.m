@@ -54,12 +54,15 @@ end
 function generateHelpForFile(filename)
 % read the code of the file
 code = readfile(filename);
+% look for the @generateHelp tag, when it's not present in the file, skip the file
+if all(cellfun('isempty',regexp(code,'^%\s+@generate(Function)?Help')))
+    return
+end 
 % parse the code to generate its help
 OBJ = functionHelp.parse(code);
 % get the new code with the help
-
+code = functionHelp.replaceHelp(code,OBJ.print);
 % write the new code to the original file
 writeTextFile(code,filename)
 end
-
 
