@@ -47,10 +47,10 @@ classdef printable
                     otherwise
                         % find the line(s) on which the property is involked
                         ind = find(~cellfun('isempty',regexp(RES,['\#' props{pp} '\#'],'once')));
-                        % find the amount of indentation there is before the actual element
-                        N = find(~isspace(RES{ind}),1)-1;
+                        % find the stuff placed before the actual element
+                        precedingstr = strsplit(RES{ind},'#');
                         % add that amount of indentation to the cell string
-                        printed = cellfun(@(x) [repmat(' ',1,N) x],printed(:),'UniformOutput',false);
+                        printed = cellfun(@(x) [precedingstr{1} x],printed(:),'UniformOutput',false);
                         % add the resulting cell string to the RESULT thing
                         RES = [RES(1:ind-1);printed(:);RES(ind+1:end)];
                         
