@@ -1,16 +1,22 @@
 classdef Variable < printable
     %VARIABLE contains the properties of the variables in the functionHelp
     properties
+        % contains the name of the variable
         Name;
+        % contains the type of the variable, like double, or string
         Type;
+        % contains a long description of the variable
         Description;
+        % contains the default value of the variable
         DefaultValue;
+        % contains the kind of variable, it can be "required", "optional", "namevalue", "flag", "positional" or "platform"
         Kind;
     end
     
     methods
         %% CONSTRUCTOR
         function obj = Variable(varargin)
+            % Constructor for the Variable class
             p = inputParser();
             p.addParameter('Name','',@ischar);
             p.addParameter('Type','',@ischar);
