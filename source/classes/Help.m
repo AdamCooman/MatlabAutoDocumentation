@@ -30,21 +30,22 @@ classdef Help < printable
         function obj = parseTags(obj,code)
             % extracts the tags from the code and assigns them to the properties of the object
             % look for statements in the comments of the code which start with @
-            detected = regexp(code,'^\s*\%\s*\@(?<tag>[a-zA-Z0-9]+)\s?(?<value>.*)','names');
+            detected = regexp(code,'^\s*\%\s*\@(?<tag>[a-zA-Z0-9]+)(?<extratag>[a-zA-Z0-9\{\}\.\(\)]*)\s+(?<value>.+)','names');
             detected = detected(~cellfun('isempty',detected));
-            % create a struct which contains the tags and cell arrays of values
-            tagstruct = struct();
+            % assign the detected tags to the object
             for ii=1:length(detected)
-                if isfield(tagstruct,detected{ii}.tag)
-                    tagstruct.(detected{ii}.tag){end+1} = detected{ii}.value;
+                % when the tag contains extra funky stuff, like {} or () or .
+                % use eval to assign the thing to the object
+                if ~isempty(detected{ii}.extratag)
+                    eval(sprintf('obj.%s%s=''%s'';',detected{ii}.tag,detected{ii}.extratag,detected{ii}.value));
                 else
-                    tagstruct.(detected{ii}.tag) = {detected{ii}.value};
+                    % otherwise, assing to the object using proper code
+                    if ~isempty(obj.(detected{ii}.tag))
+                        obj.(detected{ii}.tag){end+1} = detected{ii}.value;
+                    else
+                        obj.(detected{ii}.tag) = {detected{ii}.value};
+                    end
                 end
-            end
-            % assign the different tags to the object
-            fields = fieldnames(tagstruct);
-            for ff=1:length(fields)
-                obj.(fields{ff}) = tagstruct.(fields{ff});
             end
         end
     end
