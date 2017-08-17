@@ -180,12 +180,13 @@ classdef functionHelp < Help
         function obj = parse(code)
             % PARSE parses a matlab function to extract its functionHelp object
             obj = functionHelp();
-            % call the Help parser to assign the object properties in the tags
-            obj = obj.parseTags(code);
             % parse the function statement to get the function name and the output name(s)
             obj = obj.parseFunctionStatement(code);
             % parse the input parser statements
-            obj.InputList = Help.parseInputParser(code);
+            obj.Inputs = Help.parseInputParser(code);
+            % call the Help parser to assign the object properties in the tags
+            obj = obj.parseTags(code);
+        end
         end
     end
 end
