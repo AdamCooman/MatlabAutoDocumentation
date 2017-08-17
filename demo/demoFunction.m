@@ -22,6 +22,7 @@ args = p.results;
 out1 = args.ReqParam1;
 out2 = 5;
 
+% @generateHelp
 % @Tagline This function demonstrates the use of the generateFunctionHelp function
 % @Description long description of what the function does, placed afther the function call 
 % @Example some example code to show how the function works
