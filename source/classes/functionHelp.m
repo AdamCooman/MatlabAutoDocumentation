@@ -2,15 +2,15 @@ classdef functionHelp < Help
     %FUNCTIONHELP contains the help of a function
     properties
         % cell array of input variables
-        InputList
+        Inputs
         % cell array of output variables
-        OutputList
+        Outputs
     end
     properties (Dependent)
         % this dependent variable returns a printed list of the input variables of the function
-        Inputs
+        InputDescription
         % returns a printed list of output variables of the function
-        Outputs
+        OutputDescription
         % returns the different ways that the function can be called
         CallTypes
     end
@@ -20,21 +20,21 @@ classdef functionHelp < Help
         function obj = functionHelp(varargin)
             % CONSTRUCTOR
             DefaultFormat = {...
-                '#Name# #Tagline#';...
-                '';...
-                '    #CallTypes#';...
-                '';...
-                '#Description#';...
-                '';...
-                '#Inputs#';...
-                '';
-                '#Outputs#';...
-                '';...
-                '#Example#'};
+                '% #Name# #Tagline#';...
+                '%';...
+                '%    #CallTypes#';...
+                '%';...
+                '% #Description#';...
+                '%';...
+                '% #InputDescription#';...
+                '% ';
+                '% #OutputDescription#';...
+                '%';...
+                '% #Example#'};
             p = inputParser();
             p.KeepUnmatched = true;
-            p.addParameter('InputList' ,{}           ,@functionHelp.checkVariableList);
-            p.addParameter('OutputList',{}           ,@functionHelp.checkVariableList);
+            p.addParameter('Inputs' ,{}           ,@functionHelp.checkVariableList);
+            p.addParameter('Outputs',{}           ,@functionHelp.checkVariableList);
             p.addParameter('Format'    ,DefaultFormat,@iscellstr);
             p.parse(varargin{:})
             args = p.Results;
@@ -48,10 +48,10 @@ classdef functionHelp < Help
         end
         %% Getter for Inputs 
         % obj.Inputs returns cell array of strings with the help info about the inputs
-        function res = get.Inputs(obj)
+        function res = get.InputDescription(obj)
             res = {};
             % split the InputList into required, optional and paramValue pairs
-            [req,opt,par]=obj.splitInputList();
+            [req,opt,par]=obj.splitInputs();
             if ~isempty(req)
                 res{end+1} = 'Required Inputs:';
                 for ii=1:length(req)
@@ -76,12 +76,12 @@ classdef functionHelp < Help
         end
         %% Getter for Outputs
         % obj.Outputs returns cell array of strings with the help info about the outputs
-        function res = get.Outputs(obj)
+        function res = get.OutputDescription(obj)
             res = {};
-            if ~isempty(obj.OutputList)
+            if ~isempty(obj.Outputs)
                 res{end+1} = 'Outputs: ';
-                for ii=1:length(obj.OutputList)
-                    printed = obj.OutputList{ii}.print;
+                for ii=1:length(obj.Outputs)
+                    printed = obj.Outputs{ii}.print;
                     res = [res;printed(:)];
                 end
             end
@@ -90,17 +90,17 @@ classdef functionHelp < Help
         % obj.CallTypes returns cell array of strings with the help info on how to call the function
         function res = get.CallTypes(obj)
             % get the string that describes the output parameters
-            outNames = cellfun(@(x) x.Name ,obj.OutputList,'UniformOutput',false);
+            outNames = cellfun(@(x) x.Name ,obj.Outputs,'UniformOutput',false);
             switch length(outNames)
                 case 0
                     outstr = '';
                 case 1
                     outstr = sprintf('%s = ',strjoin(outNames));
                 otherwise
-                    outstr = sprintf('[%s] = ',strjoin(outNames));
+                    outstr = sprintf('[%s] = ',strjoin(outNames,','));
             end
             % split the inputList in
-            [req,opt,par]=obj.splitInputList();
+            [req,opt,par]=obj.splitInputs();
             % generate cell arrays with the names of the input parameters
             reqNames = cellfun(@(x) x.Name,req,'UniformOutput',false);
             optNames = cellfun(@(x) x.Name,opt,'UniformOutput',false);
@@ -115,19 +115,19 @@ classdef functionHelp < Help
             end
         end
         %% splitInputList splits the list of inputs into required, optional and parameters
-        function [req,opt,par]=splitInputList(obj)
+        function [req,opt,par]=splitInputs(obj)
             % splits the list of inputs into required, optional and parameters
             req = {};
             opt = {};
             par = {};
-            for ii=1:length(obj.InputList)
-                switch obj.InputList{ii}.Kind
+            for ii=1:length(obj.Inputs)
+                switch obj.Inputs{ii}.Kind
                     case 'required'
-                        req{end+1}=obj.InputList{ii};
+                        req{end+1}=obj.Inputs{ii};
                     case 'optional'
-                        opt{end+1}=obj.InputList{ii};
+                        opt{end+1}=obj.Inputs{ii};
                     case 'namevalue'
-                        par{end+1}=obj.InputList{ii};
+                        par{end+1}=obj.Inputs{ii};
                     otherwise
                         error('Cannot deal with input types besides "required","optional" or "namevalue"');
                 end
@@ -148,25 +148,25 @@ classdef functionHelp < Help
             % split at the commas
             temp.outputs = strsplit(temp.outputs,',');
             % now create a cell array of Variable objects and assign it to OutputList
-            obj.OutputList = cell(length(temp.outputs));
+            obj.Outputs = cell(length(temp.outputs),1);
             for vv=1:length(temp.outputs)
-            	obj.OutputList{vv} = Variable('Name',temp.outputs{vv},'Format',{'  #Name#','  #Description#'});
+            	obj.Outputs{vv} = Variable('Name',temp.outputs{vv},'Format',{'  #Name# Type: #Type#','    #Description#'});
             end
         end
         %% printFunctionSignature
         function res = printFunctionSignature(obj)
             % prints the JSON list with function inputs
-            if ~isempty(obj.InputList)
+            if ~isempty(obj.Inputs)
                 inputsigs={};
-                for ii=1:length(obj.InputList)
-                    inputsigs{end+1}=obj.InputList{ii}.generateSignature();
+                for ii=1:length(obj.Inputs)
+                    inputsigs{end+1}=obj.Inputs{ii}.generateSignature();
                 end
                 inputsigs=['"inputs":[' strjoin(inputsigs,',') ']'];
             end
-            if ~isempty(obj.OutputList)
+            if ~isempty(obj.Outputs)
                 outputsigs={};
                 for ii=1:length(obj.InputList)
-                    outputsigs{end+1}=obj.InputList{ii}.generateSignature();
+                    outputsigs{end+1}=obj.Inputs{ii}.generateSignature();
                 end
                 outputsigs=['"outputs":[' strjoin(outputsigs,',') ']'];
             end
