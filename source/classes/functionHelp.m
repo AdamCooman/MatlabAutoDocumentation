@@ -187,6 +187,26 @@ classdef functionHelp < Help
             % call the Help parser to assign the object properties in the tags
             obj = obj.parseTags(code);
         end
+        function code = replaceHelp(code)
+            % replaceHelp replaces the help on a code by the newly generated help
+            % start by parsing the code to generate the object
+            obj = functionHelp.parse(code);
+            % start by finding the function statement
+            kk = find(~cellfun('isempty',regexp(code,'^\s*function\s')),1);
+            helpstart = kk+1;
+            % find the end of the help by checking for comments
+            notfound=true;
+            while notfound
+                temp = strtrim(code{kk});
+                if isempty(temp)
+                    notfound = false;
+                else
+                    notfound = strcmp(temp(1),'%');
+                end
+                kk=kk+1;
+            end
+            % now place the new help behind the function call
+            code = [code(1:helpstart-1);obj.print;code(kk:end)];
         end
     end
 end
