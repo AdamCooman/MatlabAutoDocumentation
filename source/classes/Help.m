@@ -112,7 +112,7 @@ classdef Help < printable
                     comment{kk} = strtrim(comment{kk});
                     comment{kk} = comment{kk}(2:end);
                 end
-                res(ii).Description = strtrim(strjoin(comment(:).'));
+                res(ii).Description = strtrim(comment(:));
             end
             % create a cell array with all the inputs
             InputList = cell(length(res));
