@@ -40,11 +40,13 @@ classdef Variable < printable
             if ~isempty(obj.Kind)
                 res{end+1}=sprintf('"kind":"%s"',obj.Kind);
             end
-            % add the type to the list
-            if ~isempty(obj.Type)
-                res{end+1}=sprintf('"kind":"%s"',obj.Type);
-            end
             res = ['{' strjoin(res,',') '}'];
+        end
+        function obj = parseValidateAttributes(obj,code)
+            % parseValidateAttributes parses a call to the validateAttributes function and assings the extracted properties to the object
+            regexp(code,'validateattributes\(A,\{(?<classes>[a-zA-Z0-9,])\},\{(?<attributes>[a-zA-Z0-9,])\)\}')
+            % assign the possible classes to the Type field
+            % assign the attributes to the attributes field
         end
     end
 end
