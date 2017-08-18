@@ -8,6 +8,8 @@ classdef Help < printable
         Description
         % contains example code which shows how to use the function or class
         Example
+        % contains the functions or classes that are related to this one
+        SeeAlso
     end
     methods
         function obj = Help(varargin)
@@ -17,6 +19,7 @@ classdef Help < printable
             p.addParameter('Tagline'        ,'',@ischar);
             p.addParameter('Description'    ,{},@(x) ischar(x)||iscellstr(x));
             p.addParameter('Example'        ,{},@(x) ischar(x)||iscellstr(x));
+            p.addParameter('SeeAlso'        ,{},@(x) ischar(x)||iscellstr(x));
             p.parse(varargin{:})
             args = p.Results;
             % assign the fields to the object
@@ -25,7 +28,6 @@ classdef Help < printable
                 obj.(fields{ff}) = args.(fields{ff});
             end
         end
-        
         %% parse function, which looks for tags with @ in the code and assigns them to the properties of the object.
         function obj = parseTags(obj,code)
             % extracts the tags from the code and assigns them to the properties of the object
