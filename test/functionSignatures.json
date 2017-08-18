@@ -1,0 +1,15 @@
+{
+	"adam":
+		{
+		"inputs":
+			[
+			{"name":"a","kind":"required","type":"double"},
+			{"name":"b","kind":"namevalue","type":"double"},
+			{"name":"c","kind":"namevalue","type":"double"}
+			],
+		"outputs":
+			[
+			{"name":"res","type":"double"}
+			]
+		}
+}
