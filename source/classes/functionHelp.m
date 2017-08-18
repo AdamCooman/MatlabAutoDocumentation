@@ -199,21 +199,16 @@ classdef functionHelp < Help
             % start by parsing the code to generate the object
             obj = functionHelp.parse(code);
             % start by finding the function statement
-            kk = find(~cellfun('isempty',regexp(code,'^\s*function\s')),1);
-            helpstart = kk+1;
+            helpstart = find(~cellfun('isempty',regexp(code,'^\s*function\s')),1);
+            helpstart = helpstart+1;
             % find the end of the help by checking for comments
-            notfound=true;
-            while notfound
-                temp = strtrim(code{kk});
-                if isempty(temp)
-                    notfound = false;
-                else
-                    notfound = strcmp(temp(1),'%');
-                end
-                kk=kk+1;
+            helpend = helpstart;
+            while ~isempty(regexp(code{helpend},'^\s*%','once'))
+                helpend=helpend+1;
             end
+            helpend = helpend-1;
             % now place the new help behind the function call
-            code = [code(1:helpstart-1);obj.print;code(kk:end)];
+            code = [code(1:helpstart-1);obj.print;code(helpend+1:end)];
         end
     end
 end
