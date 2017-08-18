@@ -57,9 +57,14 @@ code = readTextFile(filename);
 % look for the @generateHelp tag, when it's not present in the file, skip the file
 if all(cellfun('isempty',regexp(code,'^%\s+@generate(Function)?Help')))
     return
-end 
-% get the new code with the help
-code = functionHelp.replaceHelp(code);
+end
+% get the code with the new help
+try
+    code = functionHelp.replaceHelp(code);
+catch err
+    fprintf(2,'Problem in file: %s\n',filename);
+    rethrow(err);
+end
 % write the new code to the original file
 writeTextFile(code,filename)
 end

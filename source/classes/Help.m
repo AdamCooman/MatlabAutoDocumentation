@@ -39,7 +39,20 @@ classdef Help < printable
                 % when the tag contains extra funky stuff, like {} or () or .
                 % use eval to assign the thing to the object
                 if ~isempty(detected{ii}.extratag)
-                    eval(sprintf('obj.%s%s=''%s'';',detected{ii}.tag,detected{ii}.extratag,detected{ii}.value));
+                    try
+                        eval(sprintf('obj.%s%s=''%s'';',detected{ii}.tag,detected{ii}.extratag,detected{ii}.value));
+                    catch err
+                        % print some info about the line on which the error occurred
+                        fprintf(2,[...
+                            'Error while assigning tag information\n' ...
+                            'The extracted tag info is the following:\n' ...
+                            '       tag: %s\n' ...
+                            '  extratag: %s\n' ...
+                            '     value: %s\n' ...
+                            ],detected{ii}.tag,detected{ii}.extratag,detected{ii}.value);
+                        % and rethrow the error
+                        rethrow(err);
+                    end
                 else
                     % otherwise, assing to the object using proper code
                     if ~isempty(obj.(detected{ii}.tag))
