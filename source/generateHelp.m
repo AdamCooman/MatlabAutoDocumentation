@@ -58,6 +58,7 @@ code = readTextFile(filename);
 if all(cellfun('isempty',regexp(code,'^%\s+@generate(Function)?Help')))
     return
 end
+fprintf('Adding help to: %s\n',filename);
 % get the code with the new help
 try
     code = functionHelp.replaceHelp(code);
