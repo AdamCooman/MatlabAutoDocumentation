@@ -40,7 +40,8 @@ classdef printable
                 end
                 switch length(printed)
                     case 0
-                        
+                        % replace the property by an empty string
+                        RES = regexprep(RES,['\#' props{pp} '\#'],'');
                     case 1
                         % replace the property in the FORMAT string
                         RES = regexprep(RES,['\#' props{pp} '\#'],printed{1});
