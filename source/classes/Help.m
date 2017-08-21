@@ -11,6 +11,10 @@ classdef Help < printable
         % contains the functions or classes that are related to this one
         SeeAlso
     end
+    properties (Dependent)
+        % returns the list of SeeAlso functions
+        SeeAlsoList
+    end
     methods
         function obj = Help(varargin)
             p=inputParser();
@@ -49,6 +53,10 @@ classdef Help < printable
                     end
                 end
             end
+        end
+                %% getter for SeeAlsoList
+        function res = get.SeeAlsoList(obj)
+            res = strjoin(upper(obj.SeeAlso),', ');
         end
     end
     

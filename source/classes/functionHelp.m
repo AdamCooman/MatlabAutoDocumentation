@@ -13,8 +13,6 @@ classdef functionHelp < Help
         OutputDescription
         % returns the different ways that the function can be called
         CallTypes
-        % returns the list of SeeAlso functions
-        SeeAlsoList
     end
     
     methods
@@ -116,10 +114,6 @@ classdef functionHelp < Help
             if ~isempty(par)
                 res{end+1} = sprintf('%s %s(%s)',outstr , obj.Name , strjoin([reqNames,optNames,parNames],','));
             end
-        end
-        %% getter for SeeAlsoList
-        function res = get.SeeAlsoList(obj)
-            res = strjoin(upper(obj.SeeAlso),', ');
         end
         %% splitInputList splits the list of inputs into required, optional and parameters
         function [req,opt,par]=splitInputs(obj)
