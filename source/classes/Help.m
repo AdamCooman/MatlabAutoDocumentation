@@ -56,7 +56,11 @@ classdef Help < printable
         end
                 %% getter for SeeAlsoList
         function res = get.SeeAlsoList(obj)
-            res = strjoin(upper(obj.SeeAlso),', ');
+            if ~isempty(obj.SeeAlso)
+                res = ['See Also: ' strjoin(upper(obj.SeeAlso),', ')];
+            else
+                res='';
+            end
         end
     end
     
