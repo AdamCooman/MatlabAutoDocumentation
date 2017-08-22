@@ -96,9 +96,9 @@ classdef functionHelp < Help
                 case 0
                     outstr = '';
                 case 1
-                    outstr = sprintf('%s = ',strjoin(outNames));
+                    outstr = sprintf('%s = ',strjoin(outNames(:).'));
                 otherwise
-                    outstr = sprintf('[%s] = ',strjoin(outNames,','));
+                    outstr = sprintf('[%s] = ',strjoin(outNames(:).',','));
             end
             % split the inputList in
             [req,opt,par]=obj.splitInputs();
