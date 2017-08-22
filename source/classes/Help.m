@@ -102,7 +102,7 @@ classdef Help < printable
             inputParserStatementLines = find( ~cellfun('isempty',detected));
             detected = detected(inputParserStatementLines);
             for ii=1:length(detected)
-                detected{ii}.stuffInside = strsplit(detected{ii}.stuffInside,',');
+                detected{ii}.stuffInside = strtrim(strsplit(detected{ii}.stuffInside,','));
             end
             % handle the detected lines, get the info out of the statement
             res = struct();
