@@ -55,7 +55,7 @@ function generateHelpForFile(filename)
 % read the code of the file
 code = readTextFile(filename);
 % look for the @generateHelp tag, when it's not present in the file, skip the file
-if all(cellfun('isempty',regexp(code,'^%\s+@generate(Function)?Help')))
+if all(cellfun('isempty',regexp(code,'^\s*%\s+@generate(Function)?Help')))
     return
 end
 fprintf('Adding help to: %s\n',filename);
