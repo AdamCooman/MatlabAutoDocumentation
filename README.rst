@@ -41,6 +41,7 @@ Example for functionHelp
 Consider the following function:
 
 ::
+
 	function out = testFunction(varargin)
 	p=inputParser();
 	% help text for the required input
@@ -66,6 +67,7 @@ Consider the following function:
 when we call the generateHelp function for this function, the following help text is placed after the function call:
 
 ::
+
 	% TESTFUNCTION Demo function for generateHelp
 	%
 	%    out =  TESTFUNCTION(reqinput)
