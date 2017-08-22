@@ -6,11 +6,13 @@ Matlab code that can parse functions and classes to generate its documentation a
 The main function to update the help of a file is the generateHelp function:
 
 ::
+
 	generateHelp('mycode.m')
 	
 will update the help in mycode.m when it contains the following line of code somewhere in the file:
 
 ::
+
 	% @generateHelp
 
 depending on whether mycode.m is a function or a class, generateHelp will act slightly differently.
@@ -18,10 +20,27 @@ depending on whether mycode.m is a function or a class, generateHelp will act sl
 Generating help for functions
 =============================
 
+when generating help for a function, the following steps are performed:
 
+1. The function statement is parsed to extract the name of the function and its outputs
+2. The input parser in the function is parsed to extract the information about its inputs
+3. The function looks for tags of the shape ``@xxx`` in the comments of the function to assign extra fields to the help
+4. The functionHelp is generated according to its ``Format`` field
+5. The old help in the code is replaced by the new help
 
+Parsing the inputParser
+-----------------------
 
+TODO: Explain how the information is extracted from the inputParser code
 
+Extracting the tags
+-------------------
+
+Supported tags are:
+
+``@Description``, ``@Tagline``, ``@Example``, ``@SeeAlso``
+
+TODO: Explain how the ``@Output{1}.Description`` works
 
 Generating help for Classes
 ===========================
@@ -29,8 +48,9 @@ Generating help for Classes
 The built-in documentation generator for classes in Matlab is already quite good.
 Normally, the only help which is required is the help for the constructor.
 
-When the generateHelp function encounters a class, it will 
-
+TODO: Explain that only limited tags are allowed in classHelp
+TODO: Explain that the constructor is pulled out and that it is considered as a function. As a consequence, its tags need to be inside of the constructor code
+TODO: Explain that only the constructor is done like that. When other functions in a class need to use the generateHelp, they should be placed in the class folder instead of in the main class code.
 
 Examples
 ========
@@ -93,3 +113,8 @@ when we call the generateHelp function for this function, the following help tex
 	%
 	% We can also add an example on how to use the code
 	% See Also: GENERATEHELP, INPUTPARSER	
+	
+Example for classHelp
+---------------------
+
+TODO: Add this example
