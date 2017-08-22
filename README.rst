@@ -42,6 +42,33 @@ Supported tags are:
 
 TODO: Explain how the ``@Output{1}.Description`` works
 
+Generating new help from the Format field
+-----------------------------------------
+
+Once all info is extracted from the function, the new help is generated. The lay-out of this new help is determined by the ``Format`` field in the functionHelp class.
+
+The ``Format`` field contains a cell array of strings in which the elements of the functionHelp object can be printed
+
+The default Formatting is the following:
+
+::
+
+        DefaultFormat = {...
+        '% #Name# #Tagline#';...
+        '%';...
+        '%    #CallTypes#';...
+        '%';...
+        '% #Description#';...
+        '%';...
+        '% #InputDescription#';...
+        '% ';
+        '% #OutputDescription#';...
+        '%';...
+        '% #Example#';...
+        '% #SeeAlsoList#'};
+
+
+
 Generating help for Classes
 ===========================
 
@@ -75,7 +102,7 @@ Consider the following function:
 	out = args.reqinput;
 	end
 	% @generateHelp
-	% @TagLine Demo function for generateHelp
+	% @Tagline Demo function for generateHelp
 	% @Description Longer description about what the function does
 	% @Description The description can be more than one line
 	% @Example We can also add an example on how to use the code
