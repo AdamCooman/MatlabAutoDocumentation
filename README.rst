@@ -75,7 +75,7 @@ Consider the following function:
 	out = args.reqinput;
 	end
 	% @generateHelp
-	% @TagLine Demo function for generateHelp
+	% @Tagline Demo function for generateHelp
 	% @Description Longer description about what the function does
 	% @Description The description can be more than one line
 	% @Example We can also add an example on how to use the code
