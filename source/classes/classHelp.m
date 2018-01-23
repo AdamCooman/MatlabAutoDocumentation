@@ -88,7 +88,7 @@ classdef classHelp < Help
             obj = obj.parseTags(code);
         end
         function code = replaceHelp(code)
-            obj = classHelp.parse(code);
+            obj = classHelp();
             % extract the constructor out of the classdef
             [con,precon,postcon] = obj.extractConstructor(code);
             % parse the remaining code
