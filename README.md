@@ -69,7 +69,9 @@ The built-in documentation generator for classes in Matlab is already quite good
 Normally, the only help which is required is the help for the constructor.
 
 **TODO:** Explain that only limited tags are allowed in classHelp
+
 **TODO:** Explain that the constructor is pulled out and that it is considered as a function. As a consequence, its tags need to be inside of the constructor code
+
 **TODO:** Explain that only the constructor is done like that. When other functions in a class need to use the generateHelp, they should be placed in the class folder instead of in the main class code.
 
 ## Examples
