@@ -25,7 +25,7 @@ classdef Variable < printable
             p.addParameter('Kind',[],@(x) ismember(x,{'required','optional','positional','flag','namevalue','platform'}));
             p.addParameter('Format', {'  #Name#  Default: #DefaultValue# CheckFunction: #Type#','    #Description#'},@iscellstr);
             p.parse(varargin{:});
-            args = p.Results();
+            args = p.Results;
             fields = fieldnames(args);
             for ff=1:length(fields)
                 obj.(fields{ff}) = args.(fields{ff});
