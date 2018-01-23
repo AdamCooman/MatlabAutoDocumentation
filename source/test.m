@@ -2,9 +2,13 @@
 clear variables
 close all
 clc
-cd C:\Users\Adam\Documents\MATLAB\generateDocumentation\demo\
+
+cd(fileparts(which('generateHelp')))
+cd ..
+cd demo
+
 code = readTextFile(which('demoFunction.m'));
-res = functionHelp.replaceHelp(code);
+res = functionHelp.replaceHelp(code)
 
 %% test for classHelp
 clear variables
