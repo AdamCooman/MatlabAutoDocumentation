@@ -20,56 +20,33 @@ classdef demoClass
     methods
         %% CONSTRUCTOR
         function obj = demoClass(Data,varargin)
-            % check if object is already FRM
-            if isa(Data,'FRM')
-                args = Data;
-                obj.Data = args.Data;
-            else
-                % first fill in the data field
-                obj.Data = MultiMatrix(Data);
-                % create input parser
-                p = inputParser;
-                p.StructExpand = true;
-                p.FunctionName = 'FRM';
-                p.KeepUnmatched = true;
-                % Frequency axis of the FRM
-                p.addParameter('Freq'    ,linspace(-1,1,length(obj.Data)),@obj.checkFreq);
-                % Maximum frequency used in the frequency normalisation
-                p.addParameter('FMax'    ,[]				 ,@isscalar);
-                % minimum frequency used in the frequency normalisation
-                p.addParameter('FMin'    ,[]				 ,@isscalar);
-                % domain on which the data is located. This can be either
-                % 'PLANE' or 'DISC'
-                p.addParameter('Domain'  ,'PLANE'            ,@obj.checkDomain);
-                % frequency normalisation type used. This can be BANDPASS or LOWPASS
-                p.addParameter('NormType','BANDPASS'         ,@obj.checkNormType);
-                % function handle to the function used to go from the plane to the disc and back
-                p.addParameter('Transform_function',@(Z,f,dir) mobiusTransform(Z,f,dir),@obj.checkTransformFunction);
-                p.parse(varargin{:});
-                args = p.Results;
-            end
             
-            % Expand data if necessary
-            if length(obj.Data) == 1
-                obj.Data = repmat(obj.Data,1,1,length(args.Freq));
-            end
+            % create input parser
+            p = inputParser;
+            p.StructExpand = true;
+            p.FunctionName = 'FRM';
+            p.KeepUnmatched = true;
+            % Frequency axis of the FRM
+            p.addParameter('Freq'    ,linspace(-1,1,length(obj.Data)),@obj.checkFreq);
+            % Maximum frequency used in the frequency normalisation
+            p.addParameter('FMax'    ,[]				 ,@isscalar);
+            % minimum frequency used in the frequency normalisation
+            p.addParameter('FMin'    ,[]				 ,@isscalar);
+            % domain on which the data is located. This can be either
+            % 'PLANE' or 'DISC'
+            p.addParameter('Domain'  ,'PLANE'            ,@obj.checkDomain);
+            % frequency normalisation type used. This can be BANDPASS or LOWPASS
+            p.addParameter('NormType','BANDPASS'         ,@obj.checkNormType);
+            % function handle to the function used to go from the plane to the disc and back
+            p.addParameter('Transform_function',@(Z,f,dir) mobiusTransform(Z,f,dir),@obj.checkTransformFunction);
+            p.parse(varargin{:});
+            args = p.Results;
             
-            % set the easy things first
-            obj.normType = upper(args.NormType);
-            obj.domain   = upper(args.Domain);
-            obj.fMax     = args.FMax;
-            obj.fMin     = args.FMin;
-            obj.transform_function = args.Transform_function;
             
-            % now set the frequency axis.
-            % The normalisation happens in the setter of Freq and Theta
-            switch obj.Domain
-                case 'PLANE'
-                    obj.Freq = args.Freq;
-                case 'DISC'
-                    obj.Theta = args.Freq;
-            end
             % @Tagline constructor for the class
+            % @Outputs{1}.Description{1} Constructed object
+            % @Outputs{1}.Type Democlass
+            
         end
         
         %% Freq, Getter and Setter
