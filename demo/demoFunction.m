@@ -14,7 +14,7 @@ p.addParameter('Parameter1','adam',@(x) ismember(x,'adam','david'));
 p.addParamValue('Parameter2',true,@islogical);
 
 p.addParameter('Parameter3','nodocumentation',@ischar);
-
+p.KeepUnmatched = true;
 p.parse(varargin{:})
 args = p.results;
 
