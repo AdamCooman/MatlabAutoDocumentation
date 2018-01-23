@@ -14,14 +14,22 @@ res = functionHelp.replaceHelp(code)
 clear variables
 close all
 clc
-cd C:\Users\acooman\Documents\MATLAB\generateFunctionHelp\demo\
+
+cd(fileparts(which('generateHelp')))
+cd ..
+cd demo
+
 code = readTextFile(which('demoClass.m'));
-res = classHelp.replaceHelp(code);
+res = classHelp.replaceHelp(code)
 
 %% test for generateHelp
 clear variables
 close all
 clc
-cd C:\Users\Adam\Documents\MATLAB\generateDocumentation\demo\
+
+cd(fileparts(which('generateHelp')))
+cd ..
+cd demo
+
 generateHelp('.')
 
