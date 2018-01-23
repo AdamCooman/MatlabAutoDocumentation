@@ -79,14 +79,8 @@ classdef Help < printable
     
     methods (Static)
         %% parseInputParser function
-        function InputList = parseInputParser(code)
+        function [InputList,KeepUnmatched,StructExpand,PartialMatching,CaseSensitive] = parseInputParser(code)
             % parses InputParser code to extract the list of input variables
-            
-            % TODO: This function should also look for properties in the inputParser like:
-            %   - KeepUnmatched
-            %   - StructExpand
-            %   - PartialMatching
-            %   - CaseSensitive
             
             % TODO: When KeepUnmatched is true in the inputParser, we could go looking
             % for the function in which the unmatched parameters are used and add those
@@ -96,6 +90,12 @@ classdef Help < printable
             % we can parse it further to make a better list of properties for the inputs
             
             % TODO: This function is a monster, it can be cleaned up thoroughly
+            
+            % look for the different input parser settings
+            KeepUnmatched   = Help.lookForBooleanBeingSet(code,'KeepUnmatched'  ,false);
+            StructExpand    = Help.lookForBooleanBeingSet(code,'StructExpand'   ,false);
+            PartialMatching = Help.lookForBooleanBeingSet(code,'PartialMatching',true );
+            CaseSensitive   = Help.lookForBooleanBeingSet(code,'CaseSensitive'  ,false);
             
             % look for the lines with 'addRequired', 'addOptional' or 'addParamValue'
             detected = regexp(code,'\.(?<mode>(addRequired)|(addOptional)|(addParamValue)|(addParameter))\((?<stuffInside>.+)\)\;?','names','freespacing');
@@ -145,6 +145,25 @@ classdef Help < printable
             InputList = cell(length(res));
             for vv=1:length(res)
             	InputList{vv} = Variable(res(vv));
+            end
+        end
+        function res = lookForBooleanBeingSet(code,parameterName,default)
+            detected = regexp(code,['\.' parameterName '\s*\=\s*(?<value>([01]|(true)|(false)))'],'names');
+            detected = detected(~cellfun('isempty',detected));
+            if ~isempty(detected)
+                if length(detected)>1
+                    warning('detected multiple KeepUnmatched, using only the first one.')
+                end
+                switch detected{1}.value
+                    case {'0','false'}
+                        res=false;
+                    case {'1','true'}
+                        res=true;
+                    otherwise
+                        error('Impossible!')
+                end
+            else
+                res = default;
             end
         end
     end

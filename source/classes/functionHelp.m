@@ -5,6 +5,14 @@ classdef functionHelp < Help
         Inputs
         % cell array of output variables
         Outputs
+        % boolean that indicates whether unmatched parameters are kept in the inputParser
+        KeepUnmatched
+        % boolean which indicates whether the function can accept structs with parameters as inputs
+        StructExpand
+        % boolean which indicates whether partial matching is enabled
+        PartialMatching
+        % boolean which indicates whether the function arguments are case sensitive
+        CaseSensitive
     end
     properties (Dependent)
         % this dependent variable returns a printed list of the input variables of the function
@@ -13,6 +21,8 @@ classdef functionHelp < Help
         OutputDescription
         % returns the different ways that the function can be called
         CallTypes
+        % displays the info about the input parser
+        InputParserInfo
     end
     
     methods
@@ -27,6 +37,7 @@ classdef functionHelp < Help
                 '% #Description#';...
                 '%';...
                 '% #InputDescription#';...
+                '% #InputParserInfo#';...
                 '% ';
                 '% #OutputDescription#';...
                 '%';...
@@ -36,7 +47,11 @@ classdef functionHelp < Help
             p.KeepUnmatched = true;
             p.addParameter('Inputs' ,{}           ,@functionHelp.checkVariableList);
             p.addParameter('Outputs',{}           ,@functionHelp.checkVariableList);
-            p.addParameter('Format'    ,DefaultFormat,@iscellstr);
+            p.addParameter('KeepUnmatched'  ,false,@islogical);
+            p.addParameter('StructExpand'   ,false,@islogical);
+            p.addParameter('PartialMatching',true ,@islogical);
+            p.addParameter('CaseSensitive'  ,false,@islogical);
+            p.addParameter('Format' ,DefaultFormat,@iscellstr);
             p.parse(varargin{:})
             args = p.Results;
             % call the superclass constructor with the unmatched parameters
@@ -115,6 +130,30 @@ classdef functionHelp < Help
                 res{end+1} = sprintf('%s %s(%s)',outstr , obj.Name , strjoin([reqNames,optNames,parNames],','));
             end
         end
+        %% Getter for InputParserInfo
+        function res = get.InputParserInfo(obj)
+            res{    1} = 'The input parser has the following properties:';
+            if obj.KeepUnmatched
+                res{end+1} = '    KeepUnmatched = true: unmatched parameters can be passed to another function';
+            else
+                res{end+1} = '    KeepUnmatched = false: unmatched parameters will generate an error';
+            end
+            if obj.StructExpand
+                res{end+1} = '     StructExpand = true: You can pass parameters as a struct';
+            else
+                res{end+1} = '     StructExpand = false';
+            end
+            if obj.CaseSensitive
+                res{end+1} = '    CaseSensitive = true';
+            else
+                res{end+1} = '    CaseSensitive = false';
+            end
+            if obj.PartialMatching
+                res{end+1} = '  PartialMatching = true';
+            else
+                res{end+1} = '  PartialMatching = false';
+            end
+        end
         %% splitInputList splits the list of inputs into required, optional and parameters
         function [req,opt,par]=splitInputs(obj)
             % splits the list of inputs into required, optional and parameters
@@ -184,7 +223,7 @@ classdef functionHelp < Help
             % parse the function statement to get the function name and the output name(s)
             obj = obj.parseFunctionStatement(code);
             % parse the input parser statements
-            obj.Inputs = Help.parseInputParser(code);
+            [obj.Inputs,obj.KeepUnmatched,obj.StructExpand,obj.PartialMatching,obj.CaseSensitive] = Help.parseInputParser(code);
             % call the Help parser to assign the object properties in the tags
             obj = obj.parseTags(code);
         end
