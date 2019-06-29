@@ -1,3 +1,0 @@
-[submodule "submodules/readwriteTextFile"]
-	path = submodules/readwriteTextFile
-	url = https://gitlab.inria.fr/acooman/readwriteTextFile.git
