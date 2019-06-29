@@ -1,27 +1,50 @@
 function generateHelp( loc , varargin )
-%GENERATEHELP generates documentation for a file and adds it to the file
-%   Detailed explanation goes here
-
-% parse the loc input a little
+% GENERATEHELP generates documentation for a file and adds it to the file
+%
+%     GENERATEHELP(Location)
+%     GENERATEHELP(Location,'ParamName',ParamValue,...)
+%
+% 
+%
+% Required Inputs:
+%   Location  Default:  CheckFunction: @(x) 5
+%     Folder to parse
+% Parameter-Value pairs:
+%   recursive  Default: false CheckFunction: @islogical
+%     when recursive is set to true, all files in a folder and its sub-folder
+%     are processed.
+%   exclude  Default: {'.git'} CheckFunction: @iscellstr
+%     cell array of strings which contains the folders of files that will be excluded
+%     from the recursive search through the folder structure
+% The input parser has the following properties:
+%     KeepUnmatched = false: unmatched parameters will generate an error
+%      StructExpand = false
+%     CaseSensitive = false
+%   PartialMatching = true
+% 
+% 
+%
+% 
+% See Also: 
+% 
 if ischar(loc)
     loc = {loc};
 elseif ~iscellstr(loc)
     error('The input should be string or a cell array of strings that points to a file or a folder');
 end
-
 p = inputParser();
+% Folder to parse
+p.addRequired('Location',@(x) 5);
 % when recursive is set to true, all files in a folder and its sub-folder
 % are processed.
 p.addParameter('recursive',false,@islogical);
 % cell array of strings which contains the folders of files that will be excluded
 % from the recursive search through the folder structure
 p.addParameter('exclude',{'\.git'},@iscellstr);
-p.parse(varargin{:});
+p.parse(loc,varargin{:});
 args = p.Results;
-
 % prepare the exclude string for the regexp later
 excludeStr = ['^' strjoin(args.exclude,'$|^') '$'];
-
 for ll=1:length(loc)
     % if the location is a file, process it. otherwise it is a folder
     if ~isdir(loc{ll})
@@ -50,6 +73,8 @@ for ll=1:length(loc)
     end
 end
 end
+% @generateHelp
+% @Tagline generates documentation for a file and adds it to the file
 %% function to generate and add the help to an .m file
 function generateHelpForFile(filename)
 % read the code of the file
@@ -69,4 +94,3 @@ end
 % write the new code to the original file
 writeTextFile(code,filename)
 end
-
