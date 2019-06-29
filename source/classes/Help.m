@@ -1,15 +1,15 @@
 classdef Help < printable
     properties
         % is the name of the function or class
-        Name
+        Name (1,1) string = ""
         % is the tagline of the function or class
-        Tagline
+        Tagline (1,1) string = ""
         % contains the longer description of the function or the class
-        Description
+        Description (:,1) string
         % contains example code which shows how to use the function or class
-        Example
+        Example (:,1) string
         % contains the functions or classes that are related to this one
-        SeeAlso
+        SeeAlso (:,1) string
     end
     properties (Dependent)
         % returns the list of SeeAlso functions
@@ -19,11 +19,11 @@ classdef Help < printable
         function obj = Help(varargin)
             p=inputParser();
             p.KeepUnmatched = true;
-            p.addParameter('Name'   ,'',@ischar);
-            p.addParameter('Tagline'        ,'',@ischar);
-            p.addParameter('Description'    ,{},@(x) ischar(x)||iscellstr(x));
-            p.addParameter('Example'        ,{},@(x) ischar(x)||iscellstr(x));
-            p.addParameter('SeeAlso'        ,{},@(x) ischar(x)||iscellstr(x));
+            p.addParameter('Name'           ,"",@(x) ischar(x)||isstring(x));
+            p.addParameter('Tagline'        ,"",@(x) ischar(x)||isstring(x));
+            p.addParameter('Description'    ,"",@isstring);
+            p.addParameter('Example'        ,"",@isstring);
+            p.addParameter('SeeAlso'        ,"",@isstring);
             p.parse(varargin{:})
             args = p.Results;
             % assign the fields to the object
@@ -42,7 +42,7 @@ classdef Help < printable
             for ii=1:length(detected)
                 % when the tag contains extra funky stuff, like {} or () or .
                 % use eval to assign the thing to the object
-                if ~isempty(detected{ii}.extratag)
+                if detected{ii}.extratag~=""
                     try
                         eval(sprintf('obj.%s%s=''%s'';',detected{ii}.tag,detected{ii}.extratag,detected{ii}.value));
                     catch err
@@ -59,15 +59,15 @@ classdef Help < printable
                     end
                 else
                     % otherwise, assing to the object using proper code
-                    if ~isempty(obj.(detected{ii}.tag))
-                        obj.(detected{ii}.tag){end+1} = detected{ii}.value;
+                    if any(obj.(detected{ii}.tag)~="")
+                        obj.(detected{ii}.tag)(end+1) = detected{ii}.value;
                     else
                         obj.(detected{ii}.tag) = {detected{ii}.value};
                     end
                 end
             end
         end
-                %% getter for SeeAlsoList
+        %% getter for SeeAlsoList
         function res = get.SeeAlsoList(obj)
             if ~isempty(obj.SeeAlso)
                 res = ['See Also: ' strjoin(upper(obj.SeeAlso),', ')];
@@ -105,46 +105,36 @@ classdef Help < printable
                 detected{ii}.stuffInside = strtrim(strsplit(detected{ii}.stuffInside,','));
             end
             % handle the detected lines, get the info out of the statement
-            res = struct();
+            InputList = Variable();
             for ii=1:length(detected)
-                res(ii).Name = detected{ii}.stuffInside{1}(2:end-1);
+                InputList(ii).Name = detected{ii}.stuffInside{1}(2:end-1);
                 switch detected{ii}.mode
                     case 'addRequired'
-                        res(ii).Kind = 'required';
-                        res(ii).DefaultValue = '';
-                        res(ii).Type = strjoin(detected{ii}.stuffInside(2:end),',');
+                        InputList(ii).Kind = "required";
+                        InputList(ii).DefaultValue = "";
+                        InputList(ii).Type = strjoin(detected{ii}.stuffInside(2:end),',');
                     case 'addOptional'
-                        res(ii).Kind = 'optional';
-                        res(ii).DefaultValue = detected{ii}.stuffInside{2};
-                        res(ii).Type = strjoin(detected{ii}.stuffInside(3:end),',');
-                    case {'addParamValue','addParameter'}
-                        res(ii).Kind = 'namevalue';
-                        res(ii).DefaultValue = detected{ii}.stuffInside{2};
-                        res(ii).Type = strjoin(detected{ii}.stuffInside(3:end),',');
+                        InputList(ii).Kind = "optional";
+                        InputList(ii).DefaultValue = detected{ii}.stuffInside{2};
+                        InputList(ii).Type = strjoin(detected{ii}.stuffInside(3:end),',');
+                    case {"addParamValue","addParameter"}
+                        InputList(ii).Kind = "namevalue";
+                        InputList(ii).DefaultValue = detected{ii}.stuffInside{2};
+                        InputList(ii).Type = strjoin(detected{ii}.stuffInside(3:end),',');
                     otherwise
                         error('impossiburu!')
                 end
-            end
-            % find the comments before each inputParser statement
-            for ii=1:length(detected)
+                % find the comments before each inputParser statement
                 kk=inputParserStatementLines(ii);
                 stillcomment=true;
                 while stillcomment
                     kk=kk-1;
                     stillcomment = ~isempty(regexp(code{kk},'^\s*\%','once'));
                 end
-                % cut the % signs out of the comment
                 comment = code(kk+1:inputParserStatementLines(ii)-1);
-                for kk=1:length(comment)
-                    comment{kk} = strtrim(comment{kk});
-                    comment{kk} = comment{kk}(2:end);
-                end
-                res(ii).Description = strtrim(comment(:));
-            end
-            % create a cell array with all the inputs
-            InputList = cell(length(res));
-            for vv=1:length(res)
-            	InputList{vv} = Variable(res(vv));
+                % cut the % signs out of the comment
+                comment = regexprep(comment,'^\s*%','');
+                InputList(ii).Description = strtrim(comment);
             end
         end
         function res = lookForBooleanBeingSet(code,parameterName,default)

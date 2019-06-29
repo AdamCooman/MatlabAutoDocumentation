@@ -2,17 +2,17 @@ classdef functionHelp < Help
     %FUNCTIONHELP contains the help of a function
     properties
         % cell array of input variables
-        Inputs
+        Inputs (:,1) Variable
         % cell array of output variables
-        Outputs
+        Outputs (:,1) Variable
         % boolean that indicates whether unmatched parameters are kept in the inputParser
-        KeepUnmatched
+        KeepUnmatched (1,1) logical
         % boolean which indicates whether the function can accept structs with parameters as inputs
-        StructExpand
+        StructExpand (1,1) logical
         % boolean which indicates whether partial matching is enabled
-        PartialMatching
+        PartialMatching (1,1) logical
         % boolean which indicates whether the function arguments are case sensitive
-        CaseSensitive
+        CaseSensitive (1,1) logical
     end
     properties (Dependent)
         % this dependent variable returns a printed list of the input variables of the function
@@ -29,24 +29,24 @@ classdef functionHelp < Help
         %% CONSTRUCTOR
         function obj = functionHelp(varargin)
             % CONSTRUCTOR
-            DefaultFormat = {...
-                '% #Name# #Tagline#';...
-                '%';...
-                '%    #CallTypes#';...
-                '%';...
-                '% #Description#';...
-                '%';...
-                '% #InputDescription#';...
-                '% #InputParserInfo#';...
-                '% ';
-                '% #OutputDescription#';...
-                '%';...
-                '% #Example#';...
-                '% #SeeAlsoList#'};
+            DefaultFormat = [...
+                "% #Name# #Tagline#";...
+                "%";...
+                "%    #CallTypes#";...
+                "%";...
+                "% #Description#";...
+                "%";...
+                "% #InputDescription#";...
+                "% #InputParserInfo#";...
+                "% ";
+                "% #OutputDescription#";...
+                "%";...
+                "% #Example#";...
+                "% #SeeAlsoList#"];
             p = inputParser();
             p.KeepUnmatched = true;
-            p.addParameter('Inputs' ,{}           ,@functionHelp.checkVariableList);
-            p.addParameter('Outputs',{}           ,@functionHelp.checkVariableList);
+            p.addParameter('Inputs' ,Variable.empty,@functionHelp.checkVariableList);
+            p.addParameter('Outputs',Variable.empty,@functionHelp.checkVariableList);
             p.addParameter('KeepUnmatched'  ,false,@islogical);
             p.addParameter('StructExpand'   ,false,@islogical);
             p.addParameter('PartialMatching',true ,@islogical);
@@ -65,27 +65,27 @@ classdef functionHelp < Help
         %% Getter for Inputs 
         % obj.Inputs returns cell array of strings with the help info about the inputs
         function res = get.InputDescription(obj)
-            res = {};
+            res = string.empty;
             % split the InputList into required, optional and paramValue pairs
             [req,opt,par]=obj.splitInputs();
             if ~isempty(req)
-                res{end+1} = 'Required Inputs:';
+                res(end+1,1) = "Required Inputs:";
                 for ii=1:length(req)
-                    printed = req{ii}.print;
+                    printed = req(ii).print;
                     res = [res;printed(:)];
                 end
             end
             if ~isempty(opt)
-                res{end+1} = 'Optional Inputs:';
+                res(end+1,1) = "Optional Inputs:";
                 for ii=1:length(opt)
-                    printed = opt{ii}.print;
+                    printed = opt(ii).print;
                     res = [res;printed(:)];
                 end
             end
             if ~isempty(par)
-                res{end+1} = 'Parameter-Value pairs:';
+                res(end+1,1) = 'Parameter-Value pairs:';
                 for ii=1:length(par)
-                    printed = par{ii}.print;
+                    printed = par(ii).print;
                     res = [res;printed(:)];
                 end
             end
@@ -93,11 +93,11 @@ classdef functionHelp < Help
         %% Getter for Outputs
         % obj.Outputs returns cell array of strings with the help info about the outputs
         function res = get.OutputDescription(obj)
-            res = {};
+            res = string.empty;
             if ~isempty(obj.Outputs)
-                res{end+1} = 'Outputs: ';
+                res(end+1,1) = "Outputs: ";
                 for ii=1:length(obj.Outputs)
-                    printed = obj.Outputs{ii}.print;
+                    printed = obj.Outputs(ii).print;
                     res = [res;printed(:)];
                 end
             end
@@ -106,28 +106,39 @@ classdef functionHelp < Help
         % obj.CallTypes returns cell array of strings with the help info on how to call the function
         function res = get.CallTypes(obj)
             % get the string that describes the output parameters
-            outNames = cellfun(@(x) x.Name ,obj.Outputs,'UniformOutput',false);
+            outNames = [obj.Outputs.Name];
             switch length(outNames)
                 case 0
-                    outstr = '';
+                    outstr = "";
                 case 1
-                    outstr = sprintf('%s = ',strjoin(outNames(:).'));
+                    outstr = sprintf("%s = ",strjoin(outNames(:).'));
                 otherwise
-                    outstr = sprintf('[%s] = ',strjoin(outNames(:).',','));
+                    outstr = sprintf("[%s] = ",strjoin(outNames(:).',','));
             end
             % split the inputList in
             [req,opt,par]=obj.splitInputs();
             % generate cell arrays with the names of the input parameters
-            reqNames = cellfun(@(x) x.Name,req,'UniformOutput',false);
-            optNames = cellfun(@(x) x.Name,opt,'UniformOutput',false);
-            parNames = '''ParamName'',ParamValue';
+            if isempty(req)
+                reqNames = string.empty;
+            else
+                reqNames = [req.Name];
+            end
+            if isempty(opt)
+                optNames = string.empty;
+            else
+                optNames = [opt.Name];
+            end
+            parNames = "'ParamName',ParamValue,...";
             % now generate the different ways in which the function can be called
-                res{1    } = sprintf('%s %s(%s)',outstr , obj.Name , strjoin(reqNames,','));
+            res = string.empty;
+            if ~isempty(req)
+                res(end+1) = sprintf('%s %s(%s)',outstr , obj.Name , strjoin(reqNames,','));
+            end
             if ~isempty(opt)
-                res{end+1} = sprintf('%s %s(%s)',outstr , obj.Name , strjoin([reqNames,optNames],','));
+                res(end+1) = sprintf('%s %s(%s)',outstr , obj.Name , strjoin([reqNames,optNames],','));
             end
             if ~isempty(par)
-                res{end+1} = sprintf('%s %s(%s)',outstr , obj.Name , strjoin([reqNames,optNames,parNames],','));
+                res(end+1) = sprintf('%s %s(%s)',outstr , obj.Name , strjoin([reqNames,optNames,parNames],','));
             end
         end
         %% Getter for InputParserInfo
@@ -157,40 +168,45 @@ classdef functionHelp < Help
         %% splitInputList splits the list of inputs into required, optional and parameters
         function [req,opt,par]=splitInputs(obj)
             % splits the list of inputs into required, optional and parameters
-            req = {};
-            opt = {};
-            par = {};
-            for ii=1:length(obj.Inputs)
-                switch obj.Inputs{ii}.Kind
-                    case 'required'
-                        req{end+1}=obj.Inputs{ii};
-                    case 'optional'
-                        opt{end+1}=obj.Inputs{ii};
-                    case 'namevalue'
-                        par{end+1}=obj.Inputs{ii};
-                    otherwise
-                        error('Cannot deal with input types besides "required","optional" or "namevalue"');
-                end
-            end
+            req = obj.Inputs([obj.Inputs.Kind]=="required");
+            opt = obj.Inputs([obj.Inputs.Kind]=="required");
+            par = obj.Inputs([obj.Inputs.Kind]=="namevalue");
         end
         %% parseFunctionStatement 
         function obj = parseFunctionStatement(obj,code)
             % parses the function statement of the code
             % find the function statement in the code
             statement = code{find(~cellfun('isempty',regexp(code,'^\s*function\s')),1)};
+            % peel off the 'function' word
+            statement = regexprep(statement,'^\s*function','');
+            % split the statement at the equal sign
+            temp = strsplit(statement,'=');
+            if length(temp)==1
+                outputInfo = '';
+                callInfo   = temp{1};
+            else
+                outputInfo = temp{1};
+                callInfo   = temp{2};
+            end
             % now call regexp again with some more funkyness
-            temp = regexp(statement,'^\s*function\s+\[?(?<outputs>[a-zA-Z0-9_,\s]*)\]?\s*=\s*(?<Name>[a-zA-Z0-9_]+)','names');
-            % assign the function's Name to the object
-            obj.Name = upper(temp.Name);
+            temp = regexp(callInfo,'^\s*(?<Name>[a-zA-Z0-9_]+)','names');
+            if isempty(temp)
+                error('Regexp to get the function name failed')
+            else
+                % assign the function's Name to the object
+                obj.Name = upper(temp.Name);
+            end
+            temp = regexp(outputInfo,'^\s*\[?(?<outputs>[a-zA-Z0-9_,\s]*)\]?\s*','names');
             % assign the outputs to their variable list
-            % get rid of the spaces
-            temp.outputs = temp.outputs(~isspace(temp.outputs));
-            % split at the commas
-            temp.outputs = strsplit(temp.outputs,',');
-            % now create a cell array of Variable objects and assign it to OutputList
-            obj.Outputs = cell(length(temp.outputs),1);
-            for vv=1:length(temp.outputs)
-            	obj.Outputs{vv} = Variable('Name',temp.outputs{vv},'Format',{'  #Name# Type: #Type#','    #Description#'});
+            if ~isempty(temp)
+                % get rid of the spaces
+                temp.outputs = temp.outputs(~isspace(temp.outputs));
+                % split at the commas
+                temp.outputs = strsplit(temp.outputs,',');
+                % now create a cell array of Variable objects and assign it to OutputList
+                for vv=length(temp.outputs):-1:1
+                    obj.Outputs(vv) = Variable('Name',temp.outputs{vv},'Format',["  #Name# Type: #Type#","    #Description#"]);
+                end
             end
         end
         %% printFunctionSignature

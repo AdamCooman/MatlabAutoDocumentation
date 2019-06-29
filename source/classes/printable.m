@@ -1,7 +1,7 @@
 classdef printable
     properties
         % format in which the object will be printed
-        Format = '';
+        Format (:,1) string = "";
     end
     methods
         function RES = print(obj)
@@ -29,7 +29,7 @@ classdef printable
                 if isa(obj.(props{pp}),'printable')
                     % if the propery is printable itself, call recursively;
                     printed = obj.(props{pp}).print;
-                elseif iscellstr(obj.(props{pp}))
+                elseif (iscellstr(obj.(props{pp})))||(isstring(obj.(props{pp})))
                     % the printed property is a cellstr, just use that one
                     printed = obj.(props{pp});
                 elseif ischar(obj.(props{pp}))
@@ -54,7 +54,6 @@ classdef printable
                         printed = cellfun(@(x) [precedingstr{1} x],printed(:),'UniformOutput',false);
                         % add the resulting cell string to the RESULT thing
                         RES = [RES(1:ind-1);printed(:);RES(ind+1:end)];
-                        
                 end
             end
         end

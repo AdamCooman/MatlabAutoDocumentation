@@ -2,15 +2,15 @@ classdef Variable < printable
     %VARIABLE contains the properties of the variables in the functionHelp
     properties
         % contains the name of the variable
-        Name;
+        Name (1,1) string
         % contains the type of the variable, like double, or string
-        Type;
+        Type (1,1) string
         % contains a long description of the variable
-        Description;
+        Description (:,1) string
         % contains the default value of the variable
-        DefaultValue;
+        DefaultValue (1,1) string
         % contains the kind of variable, it can be "required", "optional", "namevalue", "flag", "positional" or "platform"
-        Kind;
+        Kind (1,1) string
     end
     
     methods
@@ -18,12 +18,12 @@ classdef Variable < printable
         function obj = Variable(varargin)
             % Constructor for the Variable class
             p = inputParser();
-            p.addParameter('Name','',@ischar);
-            p.addParameter('Type','',@ischar);
-            p.addParameter('Description',{''},@(x) ischar(x)||iscellstr(x));
-            p.addParameter('DefaultValue','',@ischar);
-            p.addParameter('Kind',[],@(x) ismember(x,{'required','optional','positional','flag','namevalue','platform'}));
-            p.addParameter('Format', {'  #Name#  Default: #DefaultValue# CheckFunction: #Type#','    #Description#'},@iscellstr);
+            p.addParameter('Name',"",@(x) ischar(x)||isstring(x));
+            p.addParameter('Type',"",@(x) ischar(x)||isstring(x));
+            p.addParameter('Description',"",@isstring);
+            p.addParameter('DefaultValue',"",@(x) ischar(x)||isstring(x));
+            p.addParameter('Kind',"required",@(x) ismember(x,{'required','optional','positional','flag','namevalue','platform'}));
+            p.addParameter('Format', ["  #Name#  Default: #DefaultValue# CheckFunction: #Type#","    #Description#"],@isstring);
             p.parse(varargin{:});
             args = p.Results;
             fields = fieldnames(args);
