@@ -36,7 +36,7 @@ Supported tags are:
 
 `@Description`, `@Tagline`, `@Example`, `@SeeAlso`
 
-**TODO:** Explain how the `@Output{1}.Description` works
+**TODO:** Explain how the `@Output(1).Description` works
 
 ### Generating new help from the Format field
 
@@ -100,8 +100,8 @@ end
 % @Description Longer description about what the function does
 % @Description The description can be more than one line
 % @Example We can also add an example on how to use the code
-% @Outputs{1}.Description this is the description for output 1
-% @Outputs{1}.Type double
+% @Outputs(1).Description this is the description for output 1
+% @Outputs(1).Type double
 % @SeeAlso generateHelp
 % @SeeAlso inputParser
 ```
