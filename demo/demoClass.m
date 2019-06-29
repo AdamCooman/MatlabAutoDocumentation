@@ -44,8 +44,8 @@ classdef demoClass
             
             
             % @Tagline constructor for the class
-            % @Outputs{1}.Description{1} Constructed object
-            % @Outputs{1}.Type Democlass
+            % @Outputs(1).Description(1) Constructed object
+            % @Outputs(1).Type Democlass
             
         end
         

@@ -28,10 +28,8 @@ out2 = 5;
 % @Example some example code to show how the function works
 % @Example some more example code
 % @Example and we have some more
-% @Outputs{1}.Description{1} this is the description for output 1
-% @Outputs{1}.Description{2} this is more description for output 1
-% @Outputs{1}.Type double
-% @Outputs{2}.Description output 2 description
-% @Outputs{2}.Type string
-
-
+% @Outputs(1).Description(1) this is the description for output 1
+% @Outputs(1).Description(2) this is more description for output 1
+% @Outputs(1).Type double
+% @Outputs(2).Description output 2 description
+% @Outputs(2).Type string
