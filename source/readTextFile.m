@@ -1,19 +1,16 @@
-function data = readTextFile(FileName)
-% READTEXTFILE reads the contents of a text file and returns them in a cell array
-%
-%   data = ReadTextFile(FileName)
-%
-% where FileName is a string 
-% which contains the filename of the text file that should be opened.
-
-try
-    fid=fopen(FileName);
-    data=textscan(fid,'%s','delimiter','\n','whitespace','');
-    data=data{1};
-    fclose(fid);
-    clear fid
-catch err
-    error(['An error occurred while opening the netlist file: ' err.message]);
+function data = readTextFile(filename)
+% read the netlist
+fid = fopen(filename);
+data = fread(fid,Inf,'*char').';
+fclose(fid);
+% convert to string class
+data = string(data);
+% Split the netlist into a cell array of statements
+% TODO: on linux, that \r might be optional
+if ispc
+    data = strsplit(data,sprintf('\r\n')).';
+else
+    data = strsplit(data,newline).';
+end
 end
 
-end
