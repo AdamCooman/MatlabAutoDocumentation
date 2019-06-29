@@ -169,7 +169,7 @@ classdef functionHelp < Help
         function [req,opt,par]=splitInputs(obj)
             % splits the list of inputs into required, optional and parameters
             req = obj.Inputs([obj.Inputs.Kind]=="required");
-            opt = obj.Inputs([obj.Inputs.Kind]=="required");
+            opt = obj.Inputs([obj.Inputs.Kind]=="optional");
             par = obj.Inputs([obj.Inputs.Kind]=="namevalue");
         end
         %% parseFunctionStatement 
