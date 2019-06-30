@@ -33,3 +33,7 @@ cd demo
 
 generateHelp('.')
 
+%% test for generateClassDiagram
+
+generateClassDiagram('CodeFolder','.','Output','test.pdf');
+
